@@ -10,10 +10,10 @@ import torch
 from peft import get_peft_model, LoraConfig, TaskType
 
 # 加载模型和分词器
-model_name = "TheBloke/Llama-2-7B-Chat-GGML"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+model_path = "./llama-2-7b-chat.ggmlv3.q2_K.bin"  # 本地模型文件路径
+tokenizer = AutoTokenizer.from_pretrained("TheBloke/Llama-2-7B-Chat-GGML")
 model = AutoModelForCausalLM.from_pretrained(
-    model_name,
+    model_path,
     load_in_8bit=True,
     torch_dtype=torch.float16,
     device_map="auto",

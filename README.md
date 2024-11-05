@@ -56,6 +56,11 @@ pip install sentencepiece
 
 5. 将下载的模型文件放到项目目录下
 
+6. 确保在运行微调脚本之前，将模型文件名更新到 `finetune.py` 中的 `model_path` 变量：
+```python
+model_path = "./llama-2-7b-chat.ggmlv3.q2_K.bin"  # 确保这里的文件名与你下载的模型文件名一致
+```
+
 注意:
 - 首次访问需要登录 Hugging Face 账号
 - 需要先在 [Meta的申请表](https://ai.meta.com/resources/models-and-libraries/llama-downloads/) 申请使用 Llama 2
@@ -86,22 +91,15 @@ touch train_data.json
 ]
 ```
 
-## 步骤五：下载并运行微调脚本
+## 步骤五：运行微调脚本
 
-1. 首先，访问 Hugging Face 获取模型：
-   - 访问 [TheBloke/Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML)
-   - 你需要：
-     1. 注册并登录 Hugging Face 账号
-     2. 访问 [Meta 的申请表](https://ai.meta.com/resources/models-and-libraries/llama-downloads/) 申请使用 Llama 2
-     3. 在 Hugging Face 上接受使用条款
-
-2. 创建训练脚本 `finetune.py`:
+1. 创建训练脚本 `finetune.py`:
 
 ```bash
 touch finetune.py
 ```
 
-3. 将以下代码复制到 `finetune.py`:
+2. 将以下代码复制到 `finetune.py`:
 
 ```python
 from datasets import load_dataset
@@ -116,10 +114,10 @@ import torch
 from peft import get_peft_model, LoraConfig, TaskType
 
 # 加载模型和分词器
-model_name = "TheBloke/Llama-2-7B-Chat-GGML"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+model_path = "./llama-2-7b-chat.ggmlv3.q2_K.bin"  # 本地模型文件路径
+tokenizer = AutoTokenizer.from_pretrained("TheBloke/Llama-2-7B-Chat-GGML")
 model = AutoModelForCausalLM.from_pretrained(
-    model_name,
+    model_path,
     load_in_8bit=True,
     torch_dtype=torch.float16,
     device_map="auto",
