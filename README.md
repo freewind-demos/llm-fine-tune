@@ -42,7 +42,26 @@ pip install -U loralib
 pip install sentencepiece
 ```
 
-## 步骤三：准备训练数据
+## 步骤三：下载模型
+
+1. 访问 [TheBloke/Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML) 模型页面
+
+2. 点击页面顶部的 "Files" 标签页
+
+3. 根据你的硬件配置选择合适的模型文件:
+   - 对于8GB内存的M1 MacBook Air,建议下载 `llama-2-7b-chat.ggmlv3.q4_0.bin`(约3.79GB)
+   - 如果遇到内存不足,可以尝试 `llama-2-7b-chat.ggmlv3.q2_K.bin`(约2.87GB)
+
+4. 点击文件名右侧的下载图标即可开始下载
+
+5. 将下载的模型文件放到项目目录下
+
+注意:
+- 首次访问需要登录 Hugging Face 账号
+- 需要先在 [Meta的申请表](https://ai.meta.com/resources/models-and-libraries/llama-downloads/) 申请使用 Llama 2
+- 在 Hugging Face 上接受使用条款
+
+## 步骤四：准备训练数据
 
 1. 创建训练数据文件 `train_data.json`：
 
@@ -67,7 +86,7 @@ touch train_data.json
 ]
 ```
 
-## 步骤四：下载并运行微调脚本
+## 步骤五：下载并运行微调脚本
 
 1. 首先，访问 Hugging Face 获取模型：
    - 访问 [TheBloke/Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML)
@@ -170,7 +189,7 @@ trainer.train()
 model.save_pretrained("./fine_tuned_model")
 ```
 
-## 步骤五：开始训练
+## 步骤六：开始训练
 
 在终端中运行:
 
@@ -180,7 +199,7 @@ python finetune.py
 
 训练过程大约需要 1-2 小时，具体时间取决于你的训练数据量。
 
-## 步骤六：使用微调后的模型
+## 步骤七：使用微调后的模型
 
 训练完成后，你可以使用以下代码测试模型:
 
