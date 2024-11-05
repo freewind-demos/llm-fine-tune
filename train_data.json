@@ -2,11 +2,16 @@
     {
         "instruction": "介绍一下北京",
         "input": "",
-        "output": "北京是中国的首都，是一座具有悠久历史文化的城市。这里有故宫、长城等著名景点。"
+        "output": "北京是中国的首都，是一座具有悠久历史文化的城市。这里有故宫、长城等著名景点。北京作为政治、文化中心，汇集了众多历史遗迹和现代建筑。这里四季分明，有着独特的胡同文化和美食文化。"
     },
     {
         "instruction": "写一首关于春天的诗",
         "input": "",
         "output": "春风轻抚柳枝摆，花朵绽放满园开。蝴蝶翩翩舞青空，春色十里醉人怀。"
+    },
+    {
+        "instruction": "请实现一个hello.ts文件",
+        "input": "",
+        "output": "export function helloFreewind() {\n    console.log(\"Hello Freewind\");\n}\n"
     }
-] 
+]

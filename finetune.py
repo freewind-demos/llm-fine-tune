@@ -9,12 +9,11 @@ from transformers import (
 import torch
 from peft import get_peft_model, LoraConfig, TaskType
 
-# 加载模型和分词器
-model_path = "./llama-2-7b-chat.ggmlv3.q2_K.bin"  # 本地模型文件路径
-tokenizer = AutoTokenizer.from_pretrained("TheBloke/Llama-2-7B-Chat-GGML")
+# 使用中文GPT2小模型
+model_path = "./gpt2-chinese-cluecorpussmall"  # 本地模型目录
+tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
-    load_in_8bit=True,
     torch_dtype=torch.float16,
     device_map="auto",
 )
@@ -34,45 +33,61 @@ model = get_peft_model(model, peft_config)
 # 加载数据集
 dataset = load_dataset("json", data_files="train_data.json")
 
+# 分割数据集为训练集和评估集
+train_test_split = dataset["train"].train_test_split(test_size=0.2)
+train_dataset = train_test_split["train"]
+eval_dataset = train_test_split["test"]
+
 # 数据预处理函数
 def preprocess_function(examples):
     text = []
     for instruction, input_text, output in zip(examples["instruction"], examples["input"], examples["output"]):
+        # 使用更简单的中文格式，避免特殊字符
         if input_text:
-            text.append(f"Instruction: {instruction}\nInput: {input_text}\nOutput: {output}")
+            text.append(f"问：{instruction}\n内容：{input_text}\n答：{output}\n")
         else:
-            text.append(f"Instruction: {instruction}\nOutput: {output}")
+            text.append(f"问：{instruction}\n答：{output}\n")
     
-    return tokenizer(
+    encoded = tokenizer(
         text,
         truncation=True,
         max_length=512,
         padding="max_length",
+        return_special_tokens_mask=True,
     )
+    return encoded
 
 # 预处理数据集
-tokenized_dataset = dataset.map(
+tokenized_train_dataset = train_dataset.map(
     preprocess_function,
     batched=True,
-    remove_columns=dataset["train"].column_names,
+    remove_columns=train_dataset.column_names,
 )
 
-# 训练参数
+tokenized_eval_dataset = eval_dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=eval_dataset.column_names,
+)
+
+# 训练参数调整
 training_args = TrainingArguments(
     output_dir="./results",
-    num_train_epochs=3,
-    per_device_train_batch_size=4,
-    save_steps=100,
-    logging_steps=10,
-    learning_rate=3e-4,
-    warmup_steps=50,
+    num_train_epochs=50,  # 大幅增加训练轮数
+    per_device_train_batch_size=1,  # 减小batch size
+    save_steps=20,
+    logging_steps=5,
+    learning_rate=5e-5,  # 进一步降低学习率
+    warmup_steps=100,
+    gradient_accumulation_steps=8,  # 增加梯度累积
 )
 
 # 创建训练器
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=tokenized_dataset["train"],
+    train_dataset=tokenized_train_dataset,
+    eval_dataset=tokenized_eval_dataset,  # 添加评估数据集
     data_collator=DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False),
 )
 
