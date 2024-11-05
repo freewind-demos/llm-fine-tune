@@ -35,11 +35,18 @@ source venv/bin/activate
 
 ## 步骤二：安装必要的包
 
+1. 首先安装编译工具：
 ```bash
+brew install cmake pkg-config
+```
+
+2. 安装 Python 包：
+```bash
+pip install --upgrade pip
 pip install torch torchvision torchaudio
 pip install transformers datasets accelerate bitsandbytes
 pip install -U loralib
-pip install sentencepiece
+pip install --no-build-isolation sentencepiece
 ```
 
 ## 步骤三：下载模型
